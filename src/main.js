@@ -1,14 +1,26 @@
 // The Vue build version to load with the `import` command
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
-import Vue from 'vue'
-import axios from 'axios'
-import VueAxios from 'vue-axios'
-import App from './App'
-import router from './router'
+import Vue from 'vue';
+import axios from 'axios';
+import VueAxios from 'vue-axios';
+import Loading from 'vue-loading-overlay';
+import 'vue-loading-overlay/dist/vue-loading.css';
+import 'bootstrap';
 
-Vue.config.productionTip = false
-Vue.use(VueAxios, axios)
+
+import App from './App';
+import router from './router';
+//event bus
+import './bus';
+//千分號
+import currencyFillter from './filters/currency'
+
+Vue.config.productionTip = false;
+Vue.use(VueAxios, axios);
 axios.defaults.withCredentials = true;
+
+Vue.component('Loading', Loading);
+Vue.filter('currency', currencyFillter);
 
 /* eslint-disable no-new */
 new Vue({

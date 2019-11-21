@@ -16,7 +16,7 @@
             <p class="card-text">{{ item.content }}</p>
             <div class="d-flex justify-content-between align-items-baseline">
               <!-- <div class="h5">2,800 元</div> -->
-              <del class="h6">原價 {{ item.origin_price  }} 元</del>
+              <del class="h6">原價 {{ item.origin_price }} 元</del>
               <div class="h5">現在只要 {{ item.price }} 元</div>
             </div>
           </div>
@@ -64,8 +64,8 @@
               <footer class="blockquote-footer text-right">{{ product.description }}</footer>
             </blockquote>
             <div class="d-flex justify-content-between align-items-baseline">
-              <div class="h4" v-if="!product.price">{{ product.origin_price  }} 元</div>
-              <del class="h6" v-if="product.price">原價 {{ product.origin_price  }} 元</del>
+              <div class="h4" v-if="!product.price">{{ product.origin_price }} 元</div>
+              <del class="h6" v-if="product.price">原價 {{ product.origin_price }} 元</del>
               <div class="h4" v-if="product.price">現在只要 {{ product.price }} 元</div>
             </div>
             <select name class="form-control mt-3" v-model="product.num">
@@ -104,7 +104,10 @@
                 <i class="far fa-trash-alt"></i>
               </button>
             </td>
-            <td>{{ item.product.title }}</td>
+            <td>
+              <span>{{ item.product.title }}</span>
+              <div class="text-success">優惠券以套用</div>
+            </td>
             <td class="text-right">{{ item.qty}}</td>
             <td class="text-right">{{ item.total }}</td>
           </tr>
@@ -112,7 +115,7 @@
             <td colspan="3" class="text-right">總計</td>
             <td class="text-right">{{ cartsProduct.total }}</td>
           </tr>
-          <tr class="text-success">
+          <tr class="text-success" v-if="cartsProduct.total !== cartsProduct.final_total">
             <td colspan="3" class="text-right">折扣價</td>
             <td class="text-right">{{ cartsProduct.final_total }}</td>
           </tr>
@@ -131,6 +134,54 @@
         </div>
       </div>
     </div>
+    <div class="my-5 row justify-content-center">
+      <form class="col-md-6" @submit.prevent="createOrder">
+        <div class="form-group">
+          <label for="useremail">Email</label>
+          <input
+            type="email"
+            class="form-control"
+            name="email"
+            id="useremail"
+            placeholder="請輸入 Email"
+            required
+          />
+          <span class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+          <label for="username">收件人姓名</label>
+          <input type="text" class="form-control" name="name" id="username" placeholder="輸入姓名" />
+          <span class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+          <label for="usertel">收件人電話</label>
+          <input type="tel" class="form-control" id="usertel" placeholder="請輸入電話" />
+        </div>
+
+        <div class="form-group">
+          <label for="useraddress">收件人地址</label>
+          <input
+            type="text"
+            class="form-control"
+            name="address"
+            id="useraddress"
+            v
+            placeholder="請輸入地址"
+          />
+          <span class="text-danger">地址欄位不得留空</span>
+        </div>
+
+        <div class="form-group">
+          <label for="comment">留言</label>
+          <textarea name id="comment" class="form-control" cols="30" rows="10"></textarea>
+        </div>
+        <div class="text-right">
+          <button class="btn btn-danger">送出訂單</button>
+        </div>
+      </form>
+    </div>
   </div>
 </template>
 
@@ -145,7 +196,17 @@ export default {
       status: {
         loadingItem: ""
       },
-      isLoading: false
+      isLoading: false,
+      couponCode: "",
+      form: {
+        user: {
+          name: "",
+          email: "",
+          tel: "",
+          address: ""
+        },
+        message: ""
+      }
     };
   },
   methods: {
@@ -166,7 +227,7 @@ export default {
       const vm = this;
       vm.status.loadingItem = id;
       this.$http.get(api).then(response => {
-        console.log(response.data);
+        // console.log(response.data);
         vm.status.loadingItem = "";
         vm.product = response.data.product;
         $("#productModal").modal("show");
@@ -182,7 +243,7 @@ export default {
       };
       vm.status.loadingItem = id;
       this.$http.post(api, { data: cart }).then(response => {
-        console.log(response.data);
+        // console.log(response.data);
         vm.status.loadingItem = "";
         vm.getCart();
         // vm.product = response.data.product;
@@ -195,7 +256,7 @@ export default {
       const vm = this;
       vm.isLoading = true;
       this.$http.get(api).then(response => {
-        console.log(response.data.data);
+        // console.log(response.data.data);
         vm.isLoading = false;
         vm.cartsProduct = response.data.data;
       });
@@ -205,9 +266,42 @@ export default {
       const vm = this;
       vm.isLoading = true;
       this.$http.delete(api).then(response => {
-        console.log(response.data.data);
+        // console.log(response.data.data);
         vm.getCart();
         vm.isLoading = false;
+      });
+    },
+    addCouponCode() {
+      const api = `${process.env.APIPATH}/api/${process.env.CUSTOMPATH}/coupon`;
+      const vm = this;
+      const coupon = {
+        code: vm.couponCode
+      };
+      vm.isLoading = true;
+      this.$http.post(api, { data: coupon }).then(response => {
+        console.log(response);
+        if (response.data.success) {
+          vm.$bus.$emit("message:push", "優惠券已成功套用", "success");
+        } else {
+          vm.$bus.$emit(
+            "message:push",
+            "優惠券套用失敗,請確認優惠券代碼",
+            "danger"
+          );
+        }
+        vm.getCart();
+        vm.isLoading = false;
+      });
+    },
+    createOrder() {
+      const api = `${process.env.APIPATH}/api/${process.env.CUSTOMPATH}/order`;
+      const vm = this;
+      const order = vm.form;
+      //   vm.isLoading = true;
+      this.$http.post(api, { data: order }).then(response => {
+        console.log(response);
+        // vm.getCart();
+        // vm.isLoading = false;
       });
     }
   },

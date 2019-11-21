@@ -8,12 +8,14 @@ import 'vue-loading-overlay/dist/vue-loading.css';
 import 'bootstrap';
 
 
+
 import App from './App';
 import router from './router';
 //event bus
 import './bus';
 //千分號
 import currencyFillter from './filters/currency'
+import dateFilter from './filters/date';
 
 Vue.config.productionTip = false;
 Vue.use(VueAxios, axios);
@@ -21,6 +23,7 @@ axios.defaults.withCredentials = true;
 
 Vue.component('Loading', Loading);
 Vue.filter('currency', currencyFillter);
+Vue.filter('date', dateFilter);
 
 /* eslint-disable no-new */
 new Vue({

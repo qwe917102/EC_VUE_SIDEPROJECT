@@ -14,7 +14,7 @@ export default new Router({
   routes: [
     {
       path: '*',
-      redirect: 'login'
+      redirect: 'login',
     },
     // {
     //   path: '/',
@@ -25,7 +25,7 @@ export default new Router({
     {
       path: '/login',
       name: 'Login',
-      component: Login
+      component: Login,
     },
     {
       path: '/admin',
@@ -50,7 +50,7 @@ export default new Router({
           component: Coupon,
           meta: { requiresAuth: true },
         },
-      ]
+      ],
     },
     {
       path: '/',
@@ -62,7 +62,7 @@ export default new Router({
           name: 'CustomerOrder',
           component: CustomerOrder,
         },
-      ]
+      ],
     },
-  ]
-})
+  ],
+});

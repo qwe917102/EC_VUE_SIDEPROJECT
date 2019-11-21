@@ -24,7 +24,9 @@
             <span v-else class="text-danger">未啟用</span>
           </td>
           <td>
-            <button class="btn btn-outline-primary btn-sm" @click="openModal(false, item)">編輯</button>
+            <button
+              class="btn btn-outline-primary btn-sm"
+              @click="openModal(false, item)">編輯</button>
           </td>
         </tr>
       </tbody>
@@ -32,16 +34,25 @@
     <nav aria-label="Page navigation example">
       <ul class="pagination">
         <li class="page-item" :class="{'disabled' : !pagination.has_pre}">
-          <a class="page-link" href="#" aria-label="Previous" @click.prevent="getProducts(pagination.current_page - 1)">
+          <a
+            class="page-link"
+            href="#" aria-label="Previous"
+            @click.prevent="getProducts(pagination.current_page - 1)">
             <span aria-hidden="true">&laquo;</span>
           </a>
         </li>
-        <li class="page-item" v-for="page in pagination.total_pages" :key="page" :class="{ 'active' : pagination.current_page === page }">
+        <li
+          class="page-item"
+          v-for="page in pagination.total_pages"
+          :key="page" :class="{ 'active' : pagination.current_page === page }">
           <a class="page-link" href="#" @click.prevent="getProducts(page)">{{ page }}</a>
         </li>
-      
         <li class="page-item" :class="{'disabled' : pagination.has_pre}">
-          <a class="page-link" href="#" aria-label="Next" @click.prevent="getProducts(pagination.current_page + 1)">
+          <a
+            class="page-link"
+            href="#"
+            aria-label="Next"
+            @click.prevent="getProducts(pagination.current_page + 1)">
             <span aria-hidden="true">&raquo;</span>
           </a>
         </li>
@@ -205,7 +216,8 @@
 </template>
 
 <script>
-import $ from "jquery";
+import $ from 'jquery';
+
 export default {
   data() {
     return {
@@ -215,93 +227,93 @@ export default {
       isNew: false,
       isLoading: false,
       status: {
-        filesLoading: false
-      }
+        filesLoading: false,
+      },
     };
   },
   methods: {
-    //page = 1 => 讓所有沒有帶 page 的 getProducts() 預設值都為 page = 1
+    //  page = 1 => 讓所有沒有帶 page 的 getProducts() 預設值都為 page = 1
     getProducts(page = 1) {
-      //取得遠端商品資訊
+      //  取得遠端商品資訊
       const api = `${process.env.APIPATH}/api/${process.env.CUSTOMPATH}/products?page=${page}`;
       const vm = this;
       vm.isLoading = true;
-      this.$http.get(api).then(response => {
-        console.log(response.data);
+      this.$http.get(api).then((response) => {
+        // console.log(response.data);
         vm.isLoading = false;
         vm.products = response.data.products;
         vm.pagination = response.data.pagination;
       });
     },
     openModal(isNew, item) {
-      //判斷是否為新增的產品
+      //  判斷是否為新增的產品
       if (isNew) {
-        //若是則將 tempProduct 清空
+        // 若是則將 tempProduct 清空
         this.tempProduct = {};
         this.isNew = true;
       } else {
-        //若不是則將 item 內的資料顯示在 tempProduct 的相應欄位
+        // 若不是則將 item 內的資料顯示在 tempProduct 的相應欄位
         this.tempProduct = Object.assign({}, item);
         this.isNew = false;
       }
-      //開啟模板
-      $("#productModal").modal("show");
+      // 開啟模板
+      $('#productModal').modal('show');
     },
     updateProduct() {
-      //新增商品到遠端
+      // 新增商品到遠端
       let api = `${process.env.APIPATH}/api/${process.env.CUSTOMPATH}/admin/product`;
-      //預設為 post
-      let httpMethod = "post";
+      // 預設為 post
+      let httpMethod = 'post';
       const vm = this;
       vm.isLoading = true;
-      //如果不是新增的欄位則更改 api 以及資料傳輸方式
+      // 如果不是新增的欄位則更改 api 以及資料傳輸方式
       if (!vm.isNew) {
         api = `${process.env.APIPATH}/api/${process.env.CUSTOMPATH}/admin/product/${vm.tempProduct.id}`;
-        httpMethod = "put";
+        httpMethod = 'put';
       }
-      this.$http[httpMethod](api, { data: vm.tempProduct }).then(response => {
+      this.$http[httpMethod](api, { data: vm.tempProduct }).then((response) => {
         vm.isLoading = false;
-        console.log(response.data);
+        // console.log(response.data);
         if (response.data.success) {
-          $("#productModal").modal("hide");
+          $('#productModal').modal('hide');
           vm.getProducts();
         } else {
-          $("#productModal").modal("hide");
+          $('#productModal').modal('hide');
           vm.getProducts();
-          console.log("新增失敗");
+          // console.log('新增失敗');
         }
         // vm.products = response.data.products;
       });
     },
-    //上傳照片
+    // 上傳照片
     uploadFile() {
       // console.log(this);
       const uploadFile = this.$refs.files.files[0];
       const vm = this;
       const formData = new FormData();
-      formData.append("file-to-upload", uploadFile);
+      formData.append('file-to-upload', uploadFile);
       const url = `${process.env.APIPATH}/api/${process.env.CUSTOMPATH}/admin/upload`;
       vm.status.filesLoading = true;
       this.$http
         .post(url, formData, {
           header: {
-            "Content-Type": "multipart/form-data"
-          }
+            'Content-Type': 'multipart/form-data',
+          },
         })
-        .then(response => {
-          console.log(response.data);
-          //使用set將欄位強制寫入做雙向綁定
+        .then((response) => {
+          // console.log(response.data);
+          // 使用set將欄位強制寫入做雙向綁定
           if (response.data.success) {
-            vm.$set(vm.tempProduct, "imageUrl", response.data.imageUrl);
+            vm.$set(vm.tempProduct, 'imageUrl', response.data.imageUrl);
           } else {
-            this.$bus.$emit("message:push", response.data.massage, "danger");
+            this.$bus.$emit('message:push', response.data.massage, 'danger');
           }
           vm.status.filesLoading = false;
         });
-    }
+    },
   },
   created() {
     this.getProducts();
-  }
+  },
 };
 </script>

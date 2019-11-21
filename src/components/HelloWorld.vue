@@ -1,30 +1,30 @@
 <template>
-  <div class="hello">
-    <a href="#" @click.prevent="signout">登出</a>
+  <div class='hello'>
+    <a href='#' @click.prevent="signout">登出</a>
   </div>
 </template>
 
 <script>
 export default {
-  name: "HelloWorld",
+  name: 'HelloWorld',
   data() {
     return {
-      msg: "Welcome to Your Vue.js App"
+      msg: 'Welcome to Your Vue.js App',
     };
   },
   methods: {
     signout() {
       const api = `${process.env.APIPATH}/logout`;
       const vm = this;
-      //   console.log(process.env.APIPATH, process.env.CUSTOMPATH);
-      this.$http.post(api).then(response => {
-        console.log(response.data);
+      // console.log(process.env.APIPATH, process.env.CUSTOMPATH);
+      this.$http.post(api).then((response) => {
+        // console.log(response.data);
         if (response.data.success) {
-          vm.$router.push("/login");
+          vm.$router.push('/login');
         }
       });
-    }
-  }
+    },
+  },
 };
 </script>
 

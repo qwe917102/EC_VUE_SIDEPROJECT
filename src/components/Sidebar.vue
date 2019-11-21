@@ -33,7 +33,14 @@
       </ul>
 
       <h6
-        class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted"
+        class="sidebar-heading
+        d-flex
+        justify-content-between
+        align-items-center
+        px-3
+        mt-4
+        mb-1
+        text-muted"
       >
         <span>模擬功能</span>
         <a class="d-flex align-items-center text-muted" href="#">

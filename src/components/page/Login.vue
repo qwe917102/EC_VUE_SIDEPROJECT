@@ -32,28 +32,28 @@
 
 <script>
 export default {
-  name: "Login",
+  name: 'Login',
   data() {
     return {
       user: {
-        username: "",
-        password: ""
-      }
+        username: '',
+        password: '',
+      },
     };
   },
   methods: {
     signin() {
       const api = `${process.env.APIPATH}/admin/signin`;
       const vm = this;
-    //   console.log(process.env.APIPATH, process.env.CUSTOMPATH);
-      this.$http.post(api , this.user).then(response => {
-        console.log(response.data);
-        if(response.data.success){
-            vm.$router.push('/admin/products');
-        };
+      //  console.log(process.env.APIPATH, process.env.CUSTOMPATH);
+      this.$http.post(api, this.user).then((response) => {
+        //  console.log(response.data);
+        if (response.data.success) {
+          vm.$router.push('/admin/products');
+        }
       });
-    }
-  }
+    },
+  },
 };
 </script>
 
@@ -92,12 +92,12 @@ body {
 .form-signin .form-control:focus {
   z-index: 2;
 }
-.form-signin input[type="email"] {
+.form-signin input[type='email'] {
   margin-bottom: -1px;
   border-bottom-right-radius: 0;
   border-bottom-left-radius: 0;
 }
-.form-signin input[type="password"] {
+.form-signin input[type='password'] {
   margin-bottom: 10px;
   border-top-left-radius: 0;
   border-top-right-radius: 0;

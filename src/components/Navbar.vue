@@ -17,19 +17,19 @@
 
 <script>
 export default {
-  Name: "Navbar",
+  Name: 'Navbar',
   methods: {
     signout() {
       const api = `${process.env.APIPATH}/logout`;
       const vm = this;
-      //   console.log(process.env.APIPATH, process.env.CUSTOMPATH);
-      this.$http.post(api, this.user).then(response => {
-        console.log(response.data);
+      // console.log(process.env.APIPATH, process.env.CUSTOMPATH);
+      this.$http.post(api, this.user).then((response) => {
+        // console.log(response.data);
         if (response.data.success) {
-          vm.$router.push("/login");
+          vm.$router.push('/login');
         }
       });
-    }
-  }
+    },
+  },
 };
 </script>

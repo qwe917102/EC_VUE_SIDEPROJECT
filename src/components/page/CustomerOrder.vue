@@ -106,7 +106,9 @@
             </td>
             <td>
               <span>{{ item.product.title }}</span>
-              <div class="text-success">優惠券以套用</div>
+              <div
+              class="text-success"
+              v-if="cartsProduct.total !== cartsProduct.final_total">優惠券以套用</div>
             </td>
             <td class="text-right">{{ item.qty}}</td>
             <td class="text-right">{{ item.total }}</td>
@@ -128,9 +130,13 @@
           placeholder="請輸入優惠碼"
           aria-label="Recipient's username"
           aria-describedby="button-addon2"
+          v-model="couponCode"
         />
         <div class="input-group-append">
-          <button class="btn btn-outline-secondary" type="button" id="button-addon2">套用優惠碼</button>
+          <button
+          class="btn btn-outline-secondary"
+          type="button" id="button-addon2"
+          @click="addCouponCode()">套用優惠碼</button>
         </div>
       </div>
     </div>
@@ -186,7 +192,8 @@
 </template>
 
 <script>
-import $ from "jquery";
+import $ from 'jquery';
+
 export default {
   data() {
     return {
@@ -194,68 +201,68 @@ export default {
       product: {},
       cartsProduct: {},
       status: {
-        loadingItem: ""
+        loadingItem: '',
       },
       isLoading: false,
-      couponCode: "",
+      couponCode: '',
       form: {
         user: {
-          name: "",
-          email: "",
-          tel: "",
-          address: ""
+          name: '',
+          email: '',
+          tel: '',
+          address: '',
         },
-        message: ""
-      }
+        message: '',
+      },
     };
   },
   methods: {
     getProducts() {
-      //取得遠端商品資訊
+      // 取得遠端商品資訊
       const api = `${process.env.APIPATH}/api/${process.env.CUSTOMPATH}/products`;
       const vm = this;
       vm.isLoading = true;
-      this.$http.get(api).then(response => {
-        console.log(response.data);
+      this.$http.get(api).then((response) => {
+        // console.log(response.data);
         vm.isLoading = false;
         vm.products = response.data.products;
       });
     },
     getProduct(id) {
-      //取得單一商品資訊
+      // 取得單一商品資訊
       const api = `${process.env.APIPATH}/api/${process.env.CUSTOMPATH}/product/${id}`;
       const vm = this;
       vm.status.loadingItem = id;
-      this.$http.get(api).then(response => {
+      this.$http.get(api).then((response) => {
         // console.log(response.data);
-        vm.status.loadingItem = "";
+        vm.status.loadingItem = '';
         vm.product = response.data.product;
-        $("#productModal").modal("show");
+        $('#productModal').modal('show');
       });
     },
     addToCart(id, qty = 1) {
-      //送出購買商品資訊
+      // 送出購買商品資訊
       const api = `${process.env.APIPATH}/api/${process.env.CUSTOMPATH}/cart`;
       const vm = this;
       const cart = {
         product_id: id,
-        qty
+        qty,
       };
       vm.status.loadingItem = id;
-      this.$http.post(api, { data: cart }).then(response => {
+      this.$http.post(api, { data: cart }).then(() => {
         // console.log(response.data);
-        vm.status.loadingItem = "";
+        vm.status.loadingItem = '';
         vm.getCart();
         // vm.product = response.data.product;
-        $("#productModal").modal("hide");
+        $('#productModal').modal('hide');
       });
     },
     getCart() {
-      //取得購物車資訊
+      // 取得購物車資訊
       const api = `${process.env.APIPATH}/api/${process.env.CUSTOMPATH}/cart`;
       const vm = this;
       vm.isLoading = true;
-      this.$http.get(api).then(response => {
+      this.$http.get(api).then((response) => {
         // console.log(response.data.data);
         vm.isLoading = false;
         vm.cartsProduct = response.data.data;
@@ -265,7 +272,7 @@ export default {
       const api = `${process.env.APIPATH}/api/${process.env.CUSTOMPATH}/cart/${id}`;
       const vm = this;
       vm.isLoading = true;
-      this.$http.delete(api).then(response => {
+      this.$http.delete(api).then(() => {
         // console.log(response.data.data);
         vm.getCart();
         vm.isLoading = false;
@@ -275,18 +282,18 @@ export default {
       const api = `${process.env.APIPATH}/api/${process.env.CUSTOMPATH}/coupon`;
       const vm = this;
       const coupon = {
-        code: vm.couponCode
+        code: vm.couponCode,
       };
       vm.isLoading = true;
-      this.$http.post(api, { data: coupon }).then(response => {
-        console.log(response);
+      this.$http.post(api, { data: coupon }).then((response) => {
+        // console.log(response);
         if (response.data.success) {
-          vm.$bus.$emit("message:push", "優惠券已成功套用", "success");
+          vm.$bus.$emit('message:push', '優惠券已成功套用', 'success');
         } else {
           vm.$bus.$emit(
-            "message:push",
-            "優惠券套用失敗,請確認優惠券代碼",
-            "danger"
+            'message:push',
+            '優惠券套用失敗,請確認優惠券代碼',
+            'danger',
           );
         }
         vm.getCart();
@@ -298,16 +305,16 @@ export default {
       const vm = this;
       const order = vm.form;
       //   vm.isLoading = true;
-      this.$http.post(api, { data: order }).then(response => {
-        console.log(response);
+      this.$http.post(api, { data: order }).then(() => {
+        // console.log(response);
         // vm.getCart();
         // vm.isLoading = false;
       });
-    }
+    },
   },
   created() {
     this.getProducts();
     this.getCart();
-  }
+  },
 };
 </script>

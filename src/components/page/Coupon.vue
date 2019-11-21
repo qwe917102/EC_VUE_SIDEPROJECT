@@ -96,9 +96,20 @@
           </div>
 
           <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
-            <button type="button" class="btn btn-primary" @click="updateCoupon()" v-if="isNew">新增</button>
-            <button type="button" class="btn btn-primary" @click="updateCoupon()" v-else>確認修改</button>
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-dismiss="modal">取消</button>
+            <button
+              type="button"
+              class="btn btn-primary"
+              @click="updateCoupon()"
+              v-if="isNew">新增</button>
+            <button
+            type="button"
+            class="btn btn-primary"
+            @click="updateCoupon()"
+            v-else>確認修改</button>
           </div>
         </div>
       </div>
@@ -131,20 +142,21 @@
 </template>
 
 <script>
-import $ from "jquery";
+import $ from 'jquery';
+
 export default {
   data() {
     return {
       coupons: {},
       tempcoupon: {
-        title: "",
+        title: '',
         is_enabled: 0,
         percent: 100,
         due_date: 0,
-        code: ""
+        code: '',
       },
       due_date: new Date(),
-      isNew: false
+      isNew: false,
     };
   },
   watch: {
@@ -152,21 +164,21 @@ export default {
       const vm = this;
       const timestamp = Math.floor(new Date(vm.due_date) / 1000);
       vm.tempcoupon.due_date = timestamp;
-    }
+    },
   },
   methods: {
     getCoupon() {
       const api = `${process.env.APIPATH}/api/${process.env.CUSTOMPATH}/admin/coupons`;
       const vm = this;
-      this.$http.get(api).then(response => {
-        console.log(response.data);
+      this.$http.get(api).then((response) => {
+        // console.log(response.data);
         vm.coupons = response.data.coupons;
       });
     },
     openModal(isNew, item) {
       const vm = this;
       vm.isNew = isNew;
-      $("#couponCreateModal").modal("show");
+      $('#couponCreateModal').modal('show');
       if (vm.isNew) {
         vm.tempcoupon = {};
       } else {
@@ -177,29 +189,29 @@ export default {
       const vm = this;
       if (vm.isNew) {
         const api = `${process.env.APIPATH}/api/${process.env.CUSTOMPATH}/admin/coupon`;
-        this.$http.post(api, { data: vm.tempcoupon }).then(response => {
-          console.log(response.data);
-          $("#couponCreateModal").modal("hide");
+        this.$http.post(api, { data: vm.tempcoupon }).then(() => {
+          // console.log(response.data);
+          $('#couponCreateModal').modal('hide');
           vm.getCoupon();
-          vm.$bus.$emit("message:push", "優惠券已成功添加", "success");
+          vm.$bus.$emit('message:push', '優惠券已成功添加', 'success');
         });
       } else {
         const api = `${process.env.APIPATH}/api/${process.env.CUSTOMPATH}/admin/coupon/${vm.tempcoupon.id}`;
-        this.$http.put(api, { data: vm.tempcoupon }).then(response => {
-          console.log(response.data);
-          $("#couponCreateModal").modal("hide");
+        this.$http.put(api, { data: vm.tempcoupon }).then(() => {
+          // console.log(response.data);
+          $('#couponCreateModal').modal('hide');
           vm.getCoupon();
-          vm.$bus.$emit("message:push", "優惠券資訊修改完成", "success");
+          vm.$bus.$emit('message:push', '優惠券資訊修改完成', 'success');
         });
       }
     },
     openDeleteModal(item) {
-      $("#deleteModal").modal("show");
+      $('#deleteModal').modal('show');
       const vm = this;
       const api = `${process.env.APIPATH}/api/${process.env.CUSTOMPATH}/admin/coupons`;
-      this.$http.get(api).then(response => {
+      this.$http.get(api).then(() => {
         vm.tempcoupon = Object.assign({}, item);
-        console.log(response.data);
+        // console.log(response.data);
         //   $("#couponCreateModal").modal("hide");
         //   vm.getCoupon();
       });
@@ -207,17 +219,17 @@ export default {
     deletedItem() {
       const vm = this;
       const api = `${process.env.APIPATH}/api/${process.env.CUSTOMPATH}/admin/coupon/${vm.tempcoupon.id}`;
-      this.$http.delete(api).then(response => {
-        console.log(response.data);
-        $("#deleteModal").modal("hide");
+      this.$http.delete(api).then(() => {
+        // console.log(response.data);
+        $('#deleteModal').modal('hide');
         vm.getCoupon();
-        vm.$bus.$emit("message:push", "優惠券已成功刪除", "success");
+        vm.$bus.$emit('message:push', '優惠券已成功刪除', 'success');
       });
-    }
+    },
   },
   created() {
     this.getCoupon();
-  }
+  },
 };
 // import $ from "jquery";
 // export default {
@@ -278,7 +290,8 @@ export default {
 //           this.getCoupons();
 //         });
 //       } else {
-//         const url = `${process.env.APIPATH}/api/${process.env.CUSTOMPATH}/admin/coupon/${vm.tempCoupon.id}`;
+//         const url =
+//         `${process.env.APIPATH}/api/${process.env.CUSTOMPATH}/admin/coupon/${vm.tempCoupon.id}`;
 //         vm.due_date = new Date(vm.tempCoupon.due_date * 1000);
 //         this.$http.put(url, { data: vm.tempCoupon }).then(response => {
 //           console.log(response);

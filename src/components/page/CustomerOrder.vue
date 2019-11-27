@@ -1,6 +1,8 @@
 <template>
   <div>
-    <loading :active.sync="isLoading"></loading>
+    <div class="text-right my-3">
+      <button class="btn btn-outline-danger">{{ cartsNum }}購物車商品</button>
+    </div>
     <div class="row mt-4">
       <div class="col-md-4 mb-4" v-for="item in products" :key="item.id">
         <div class="card border-0 shadow-sm">
@@ -197,13 +199,13 @@ import $ from 'jquery';
 export default {
   data() {
     return {
-      products: [],
+      // products: [],
       product: {},
       cartsProduct: {},
+      cartsNum: '',
       status: {
         loadingItem: '',
       },
-      isLoading: false,
       couponCode: '',
       form: {
         user: {
@@ -216,17 +218,23 @@ export default {
       },
     };
   },
+  computed: {
+    products() {
+      return this.$store.state.products;
+    },
+  },
   methods: {
     getProducts() {
       // 取得遠端商品資訊
-      const api = `${process.env.APIPATH}/api/${process.env.CUSTOMPATH}/products`;
-      const vm = this;
-      vm.isLoading = true;
-      this.$http.get(api).then((response) => {
-        // console.log(response.data);
-        vm.isLoading = false;
-        vm.products = response.data.products;
-      });
+      // const api = `${process.env.APIPATH}/api/${process.env.CUSTOMPATH}/products`;
+      // const vm = this;
+      // vm.$store.dispatch('upLoading', true);
+      // this.$http.get(api).then((response) => {
+      //   // console.log(response.data);
+      //   vm.$store.dispatch('upLoading', false);
+      //   vm.products = response.data.products;
+      // });
+      this.$store.dispatch('getProducts');
     },
     getProduct(id) {
       // 取得單一商品資訊
@@ -261,21 +269,22 @@ export default {
       // 取得購物車資訊
       const api = `${process.env.APIPATH}/api/${process.env.CUSTOMPATH}/cart`;
       const vm = this;
-      vm.isLoading = true;
+      vm.$store.dispatch('upLoading', true);
       this.$http.get(api).then((response) => {
         // console.log(response.data.data);
-        vm.isLoading = false;
+        vm.$store.dispatch('upLoading', false);
         vm.cartsProduct = response.data.data;
+        vm.cartsNum = ` ( ${response.data.data.carts.length} ) `;
       });
     },
     removeCartItem(id) {
       const api = `${process.env.APIPATH}/api/${process.env.CUSTOMPATH}/cart/${id}`;
       const vm = this;
-      vm.isLoading = true;
+      vm.$store.dispatch('upLoading', true);
       this.$http.delete(api).then(() => {
         // console.log(response.data.data);
         vm.getCart();
-        vm.isLoading = false;
+        vm.$store.dispatch('upLoading', false);
       });
     },
     addCouponCode() {
@@ -284,7 +293,7 @@ export default {
       const coupon = {
         code: vm.couponCode,
       };
-      vm.isLoading = true;
+      vm.$store.dispatch('upLoading', true);
       this.$http.post(api, { data: coupon }).then((response) => {
         // console.log(response);
         if (response.data.success) {
@@ -297,18 +306,21 @@ export default {
           );
         }
         vm.getCart();
-        vm.isLoading = false;
+        vm.$store.dispatch('upLoading', false);
       });
     },
     createOrder() {
       const api = `${process.env.APIPATH}/api/${process.env.CUSTOMPATH}/order`;
       const vm = this;
       const order = vm.form;
-      //   vm.isLoading = true;
-      this.$http.post(api, { data: order }).then(() => {
+      vm.$store.dispatch('upLoading', true);
+      this.$http.post(api, { data: order }).then((response) => {
+        if (response.data.success) {
+          vm.$router.push(`customer-checkout/${response.data.orderId}`);
+        }
         // console.log(response);
         // vm.getCart();
-        // vm.isLoading = false;
+        vm.$store.dispatch('upLoading', false);
       });
     },
   },

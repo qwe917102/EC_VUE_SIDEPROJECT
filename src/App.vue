@@ -1,12 +1,18 @@
 <template>
   <div id='app'>
     <router-view />
+    <loading :active.sync="isLoading"></loading>
   </div>
 </template>
 
 <script>
 export default {
   name: 'App',
+  computed: {
+    isLoading() {
+      return this.$store.state.isLoading;
+    },
+  },
 };
 </script>
 

@@ -1,6 +1,7 @@
 // The Vue build version to load with the `import` command
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import Vue from 'vue';
+import Vuex from 'vuex';
 import axios from 'axios';
 import VueAxios from 'vue-axios';
 import Loading from 'vue-loading-overlay';
@@ -14,9 +15,11 @@ import './bus';
 // 千分號
 import currencyFillter from './filters/currency';
 import dateFilter from './filters/date';
+import store from './store';
 
 Vue.config.productionTip = false;
 Vue.use(VueAxios, axios);
+Vue.use(Vuex);
 axios.defaults.withCredentials = true;
 
 Vue.component('Loading', Loading);
@@ -27,6 +30,7 @@ Vue.filter('date', dateFilter);
 new Vue({
   el: '#app',
   router,
+  store,
   components: { App },
   template: '<App/>',
 });

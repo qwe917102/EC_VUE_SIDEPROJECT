@@ -1,6 +1,5 @@
 <template>
   <div>
-    <loading :active.sync="isLoading"></loading>
     <div class="text-right my-3">
       <button class="btn btn-primary" @click="openModal(true)">Create New Product</button>
     </div>
@@ -225,7 +224,6 @@ export default {
       pagination: {},
       tempProduct: {},
       isNew: false,
-      isLoading: false,
       status: {
         filesLoading: false,
       },
@@ -237,10 +235,10 @@ export default {
       //  取得遠端商品資訊
       const api = `${process.env.APIPATH}/api/${process.env.CUSTOMPATH}/products?page=${page}`;
       const vm = this;
-      vm.isLoading = true;
+      vm.$store.dispatch('upLoading', true);
       this.$http.get(api).then((response) => {
         // console.log(response.data);
-        vm.isLoading = false;
+        vm.$store.dispatch('upLoading', false);
         vm.products = response.data.products;
         vm.pagination = response.data.pagination;
       });
@@ -265,14 +263,14 @@ export default {
       // 預設為 post
       let httpMethod = 'post';
       const vm = this;
-      vm.isLoading = true;
+      vm.$store.dispatch('upLoading', true);
       // 如果不是新增的欄位則更改 api 以及資料傳輸方式
       if (!vm.isNew) {
         api = `${process.env.APIPATH}/api/${process.env.CUSTOMPATH}/admin/product/${vm.tempProduct.id}`;
         httpMethod = 'put';
       }
       this.$http[httpMethod](api, { data: vm.tempProduct }).then((response) => {
-        vm.isLoading = false;
+        vm.$store.dispatch('upLoading', false);
         // console.log(response.data);
         if (response.data.success) {
           $('#productModal').modal('hide');

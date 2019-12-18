@@ -8,8 +8,16 @@ export default new Vuex.Store({
   state: {
     isLoading: false,
     products: [],
+    coupons: {},
   },
   actions: {
+    getCoupon(context) {
+      const api = `${process.env.APIPATH}/api/${process.env.CUSTOMPATH}/admin/coupons`;
+      axios.get(api).then((response) => {
+        // console.log(response);
+        context.commit('GETCOUPON', response.data.coupons);
+      });
+    },
     upLoading(context, payload) {
       context.commit('LOADING', payload);
     },
@@ -25,11 +33,17 @@ export default new Vuex.Store({
     },
   },
   mutations: {
+    GETCOUPON(state, payload) {
+      state.coupons = payload;
+    },
     LOADING(state, payload) {
       state.isLoading = payload;
     },
     PRODUCT(state, payload) {
       state.products = payload;
     },
+  },
+  getters: {
+    coupons: state => state.coupons,
   },
 });

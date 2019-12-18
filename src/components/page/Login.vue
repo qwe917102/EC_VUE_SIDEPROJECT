@@ -47,7 +47,7 @@ export default {
       const vm = this;
       //  console.log(process.env.APIPATH, process.env.CUSTOMPATH);
       this.$http.post(api, this.user).then((response) => {
-        //  console.log(response.data);
+         console.log(response.data);
         if (response.data.success) {
           vm.$router.push('/admin/products');
         }

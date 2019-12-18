@@ -143,11 +143,11 @@
 
 <script>
 import $ from 'jquery';
+import { mapGetters, mapActions } from "vuex";
 
 export default {
   data() {
     return {
-      coupons: {},
       tempcoupon: {
         title: '',
         is_enabled: 0,
@@ -168,12 +168,7 @@ export default {
   },
   methods: {
     getCoupon() {
-      const api = `${process.env.APIPATH}/api/${process.env.CUSTOMPATH}/admin/coupons`;
-      const vm = this;
-      this.$http.get(api).then((response) => {
-        // console.log(response.data);
-        vm.coupons = response.data.coupons;
-      });
+      this.$store.dispatch('getCoupon');
     },
     openModal(isNew, item) {
       const vm = this;
@@ -226,6 +221,9 @@ export default {
         vm.$bus.$emit('message:push', '優惠券已成功刪除', 'success');
       });
     },
+  },
+  computed: {
+    ...mapGetters(["coupons"]),
   },
   created() {
     this.getCoupon();

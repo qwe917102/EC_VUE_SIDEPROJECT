@@ -1,4 +1,4 @@
-# my-project
+# 六腳學院課程模擬EC專案
 
 > A Vue.js project
 
